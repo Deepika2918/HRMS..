@@ -1,132 +1,23 @@
-import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Users, CalendarCheck, Settings, Menu, X, Bell, LogOut, HelpCircle, Zap, ChevronRight } from 'lucide-react'
+import { Routes, Route } from 'react-router-dom'
 import { useState } from 'react'
+import Header from './components/layout/Header'
+import Sidebar from './components/layout/Sidebar'
 import Dashboard from './pages/Dashboard'
 import EmployeeList from './pages/EmployeeList'
 import AttendanceManager from './pages/AttendanceManager'
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const location = useLocation()
-
-  const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'Employees', path: '/employees', icon: Users },
-    { name: 'Attendance', path: '/attendance', icon: CalendarCheck },
-  ]
 
   return (
     <div className="h-screen w-screen bg-[#F1F5F9] p-4 flex gap-4 overflow-hidden text-slate-900">
-      {/* Sidebar */}
-      <aside className={`bg-white rounded-[2rem] shadow-sm border border-slate-200/50 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'} shrink-0 relative z-40 overflow-hidden`}>
-        <div className={`flex items-center shrink-0 ${isSidebarOpen ? 'p-8 justify-between' : 'py-8 justify-center'}`}>
-          {isSidebarOpen ? (
-            <div className="flex items-center gap-2">
-               <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-600/30 shrink-0">
-                  <Zap size={20} fill="white" />
-               </div>
-               <span className="text-xl font-bold tracking-tight text-slate-800">HRMS<span className="text-primary-600">.</span></span>
-            </div>
-          ) : (
-            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-600/30 shrink-0">
-               <Zap size={22} fill="white" />
-            </div>
-          )}
-        </div>
+      <Sidebar isOpen={isSidebarOpen} />
 
-        <nav className="mt-2 px-4 space-y-1.5 flex-1 overflow-y-auto no-scrollbar">
-          <p className={`px-4 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ${!isSidebarOpen && 'text-center'}`}>
-            {isSidebarOpen ? 'Main Menu' : '••'}
-          </p>
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all group ${
-                location.pathname === item.path 
-                  ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' 
-                  : 'hover:bg-slate-50 text-slate-500'
-              } ${!isSidebarOpen && 'justify-center'}`}
-            >
-              <item.icon size={20} strokeWidth={location.pathname === item.path ? 2.5 : 2} className="shrink-0" />
-              {isSidebarOpen && (
-                <div className="flex-1 flex items-center justify-between overflow-hidden">
-                  <span className="font-semibold text-sm truncate">{item.name}</span>
-                  {location.pathname === item.path && <ChevronRight size={14} className="opacity-50 shrink-0" />}
-                </div>
-              )}
-            </Link>
-          ))}
-          
-          <div className="pt-6">
-             <p className={`px-4 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ${!isSidebarOpen && 'text-center'}`}>
-               {isSidebarOpen ? 'Support' : '••'}
-             </p>
-             <div className={`flex items-center gap-3 px-4 py-3.5 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors ${!isSidebarOpen && 'justify-center'}`}>
-                <HelpCircle size={20} className="shrink-0" />
-                {isSidebarOpen && <span className="font-semibold text-sm truncate">Help Center</span>}
-             </div>
-             <div className={`flex items-center gap-3 px-4 py-3.5 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors ${!isSidebarOpen && 'justify-center'}`}>
-                <Settings size={20} className="shrink-0" />
-                {isSidebarOpen && <span className="font-semibold text-sm truncate">Settings</span>}
-             </div>
-          </div>
-        </nav>
-
-        {/* Sidebar Bottom Upgrade Card */}
-        {isSidebarOpen && (
-          <div className="p-4 m-4 bg-primary-50 rounded-2xl border border-primary-100 relative overflow-hidden group shrink-0">
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-5 h-5 bg-primary-600 rounded-md flex items-center justify-center text-white scale-75 shrink-0">
-                  <Zap size={12} fill="white" />
-                </div>
-                <span className="text-[10px] font-extrabold text-primary-700 uppercase tracking-widest">Upgrade Pro</span>
-              </div>
-              <p className="text-[9px] text-primary-600/80 font-bold leading-tight uppercase">Get AI analytics & support.</p>
-            </div>
-          </div>
-        )}
-
-        <div className="p-4 border-t border-slate-50 shrink-0">
-           <div className={`flex items-center ${isSidebarOpen ? 'gap-3 px-4' : 'justify-center'} py-2`}>
-              <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center font-bold text-[10px] text-slate-600 shrink-0">
-                 AD
-              </div>
-              {isSidebarOpen && (
-                <div className="flex-1 min-w-0">
-                   <div className="text-xs font-bold text-slate-800 truncate">Admin User</div>
-                   <div className="text-[9px] text-slate-400 font-bold uppercase truncate">HR Manager</div>
-                </div>
-              )}
-           </div>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 bg-white rounded-[2rem] shadow-sm border border-slate-200/50 overflow-hidden relative">
-        <header className="h-20 shrink-0 flex items-center justify-between px-10 border-b border-slate-50 bg-white/80 backdrop-blur-md z-30">
-          <div className="flex items-center gap-4">
-             <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2.5 hover:bg-slate-50 rounded-xl text-slate-400 transition-colors border border-transparent hover:border-slate-100">
-                {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-             </button>
-             <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-               {navItems.find(n => n.path === location.pathname)?.name || 'HRMS Lite'}
-             </h1>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex flex-col items-end">
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Global Status</span>
-               <span className="text-xs font-bold text-emerald-500">System Balanced</span>
-            </div>
-            <div className="h-8 w-px bg-slate-100 hidden md:block" />
-            <button className="p-2.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl relative transition-all border border-transparent hover:border-primary-100">
-              <Bell size={20} />
-              <span className="absolute top-3 right-3 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
-            </button>
-          </div>
-        </header>
+        <Header 
+          isSidebarOpen={isSidebarOpen} 
+          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+        />
 
         <section className="flex-1 overflow-y-auto no-scrollbar p-10 bg-white relative">
            <Routes>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Plus, Search, Trash2, User, Loader2 } from 'lucide-react'
 import { employeeService } from '../services/api'
-import { Modal, message, Table, Tag, Tooltip, Pagination, Badge, Button, Input, Select, Space } from 'antd'
+import { Modal, message, Table, Tag, Tooltip, Pagination, Badge, Button, Input, Select, Space, Empty } from 'antd'
 import dayjs from 'dayjs'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import AddEmployeeModal from '../components/modals/AddEmployeeModal'
@@ -152,8 +152,8 @@ export default function EmployeeList() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 z-10" size={16} />
           <input 
             type="text" 
-            placeholder="Search employees..." 
-            className="input-field !pl-10 h-10 shadow-sm"
+            placeholder="Search employees by name, ID or department..." 
+            className="input-field !pl-10 h-10 shadow-sm text-xs font-medium"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value)
@@ -175,6 +175,18 @@ export default function EmployeeList() {
             loading={loading}
             pagination={false}
             className="custom-antd-table"
+            locale={{
+              emptyText: (
+                <div className="py-10">
+                  <Empty 
+                    image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                    description={
+                      <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">No employees found</span>
+                    } 
+                  />
+                </div>
+              )
+            }}
           />
         </div>
         

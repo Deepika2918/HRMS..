@@ -10,14 +10,10 @@ router = APIRouter()
 
 @router.post("/", response_model=EmployeeResponse, status_code=status.HTTP_201_CREATED)
 def create_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
-    # Check if employee_id already exists
-    db_employee = db.query(Employee).filter(Employee.employee_id == employee.employee_id).first()
-    if db_employee:
+    if db.query(Employee).filter(Employee.employee_id == employee.employee_id).first():
         raise HTTPException(status_code=400, detail="Employee ID already registered")
     
-    # Check if email exists
-    db_email = db.query(Employee).filter(Employee.email == employee.email).first()
-    if db_email:
+    if db.query(Employee).filter(Employee.email == employee.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
     
     new_employee = Employee(**employee.model_dump())
@@ -37,13 +33,10 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
     present = db.query(Attendance).filter(Attendance.date == today, Attendance.status == "Present").count()
     absent = db.query(Attendance).filter(Attendance.date == today, Attendance.status == "Absent").count()
     
-    # Simple distribution
-    distribution = {}
-    employees = db.query(Employee.department).all()
-    for (dept,) in employees:
-        distribution[dept] = distribution.get(dept, 0) + 1
+    from sqlalchemy import func
+    dist_query = db.query(Employee.department, func.count(Employee.id)).group_by(Employee.department).all()
+    distribution = {dept: count for dept, count in dist_query}
         
-    # Recent employees
     recent = db.query(Employee).order_by(Employee.id.desc()).limit(3).all()
         
     return {

@@ -10,12 +10,9 @@ router = APIRouter()
 
 @router.post("/", response_model=AttendanceResponse)
 def mark_attendance(attendance: AttendanceCreate, db: Session = Depends(get_db)):
-    # Check if employee exists
-    employee = db.query(Employee).filter(Employee.id == attendance.employee_db_id).first()
-    if not employee:
+    if not db.query(Employee).filter(Employee.id == attendance.employee_db_id).first():
         raise HTTPException(status_code=404, detail="Employee not found")
     
-    # Check if attendance already marked for this date
     existing = db.query(Attendance).filter(
         Attendance.employee_id == attendance.employee_db_id,
         Attendance.date == attendance.date
@@ -23,6 +20,8 @@ def mark_attendance(attendance: AttendanceCreate, db: Session = Depends(get_db))
     
     if existing:
         existing.status = attendance.status
+        existing.remarks = attendance.remarks
+        existing.check_in_time = attendance.check_in_time
         db.commit()
         db.refresh(existing)
         return existing
@@ -30,7 +29,9 @@ def mark_attendance(attendance: AttendanceCreate, db: Session = Depends(get_db))
     new_attendance = Attendance(
         date=attendance.date,
         status=attendance.status,
-        employee_id=attendance.employee_db_id
+        employee_id=attendance.employee_db_id,
+        remarks=attendance.remarks,
+        check_in_time=attendance.check_in_time
     )
     db.add(new_attendance)
     db.commit()
@@ -43,20 +44,23 @@ def get_employee_attendance(employee_id: int, db: Session = Depends(get_db)):
 
 @router.get("/summary", response_model=List[dict])
 def get_attendance_summary(db: Session = Depends(get_db)):
-    # Calculate present days per employee
-    employees = db.query(Employee).all()
-    summary = []
-    for emp in employees:
-        present_count = db.query(Attendance).filter(
-            Attendance.employee_id == emp.id,
-            Attendance.status == "Present"
-        ).count()
-        summary.append({
-            "employee_id": emp.employee_id,
-            "full_name": emp.full_name,
-            "present_days": present_count
-        })
-    return summary
+    from sqlalchemy import func
+    results = db.query(
+        Employee.employee_id,
+        Employee.full_name,
+        func.count(Attendance.id).label("present_days")
+    ).outerjoin(
+        Attendance, 
+        (Attendance.employee_id == Employee.id) & (Attendance.status == "Present")
+    ).group_by(Employee.id).all()
+
+    return [
+        {
+            "employee_id": r.employee_id,
+            "full_name": r.full_name,
+            "present_days": r.present_days
+        } for r in results
+    ]
 @router.get("/today-stats")
 def get_today_stats(date: str, db: Session = Depends(get_db)):
     # date format should be YYYY-MM-DD

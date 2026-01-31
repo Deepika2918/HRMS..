@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Calendar as CalendarIcon, CheckCircle2, XCircle, Search, History, Loader2, Info, Clock, MapPin } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Calendar as CalendarIcon, Search, Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { employeeService, attendanceService } from '../services/api'
 import { DatePicker, message, Spin, Empty } from 'antd'
 import dayjs from 'dayjs'
+import AttendanceSummary from '../components/attendance/AttendanceSummary'
+import AttendanceHistoryCard from '../components/attendance/AttendanceHistoryCard'
 
 interface Employee {
   id: number
@@ -93,6 +95,11 @@ export default function AttendanceManager() {
     fetchHistory(emp.id)
   }
 
+  const filteredEmployees = employees.filter(e => 
+    e.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    e.department.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in h-full overflow-hidden">
       <div className="lg:col-span-2 flex flex-col h-full overflow-hidden">
@@ -116,35 +123,17 @@ export default function AttendanceManager() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mb-6 shrink-0">
-            <div className="bg-emerald-50/50 border border-emerald-100 p-3 rounded-2xl">
-              <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Present Today</p>
-              <div className="flex items-baseline gap-1">
-                <h4 className="text-lg font-bold text-emerald-700">{todayStats.present}</h4>
-                <span className="text-[10px] font-bold text-emerald-500/60 uppercase">EMP</span>
-              </div>
-            </div>
-            <div className="bg-rose-50/50 border border-rose-100 p-3 rounded-2xl">
-              <p className="text-[9px] font-bold text-rose-600 uppercase tracking-wider mb-1">Absent Today</p>
-              <div className="flex items-baseline gap-1">
-                <h4 className="text-lg font-bold text-rose-700">{todayStats.absent}</h4>
-                <span className="text-[10px] font-bold text-rose-500/60 uppercase">EMP</span>
-              </div>
-            </div>
-            <div className="bg-slate-50/50 border border-slate-200/50 p-3 rounded-2xl">
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Roster</p>
-              <div className="flex items-baseline gap-1">
-                <h4 className="text-lg font-bold text-slate-600">{todayStats.total}</h4>
-                <span className="text-[10px] font-bold text-slate-400/60 uppercase">STAFF</span>
-              </div>
-            </div>
-          </div>
+          <AttendanceSummary 
+            present={todayStats.present}
+            absent={todayStats.absent}
+            total={todayStats.total}
+          />
 
           <div className="relative mb-4 shrink-0">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
             <input 
               type="text"
-              placeholder="Quick search by name or department..."
+              placeholder="Search by name or department..."
               className="input-field !pl-10 !h-9 text-[11px] font-medium"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -154,10 +143,19 @@ export default function AttendanceManager() {
           <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
             {loading ? (
               <div className="h-full flex items-center justify-center p-20"><Spin /></div>
-            ) : employees.filter(e => 
-              e.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-              e.department.toLowerCase().includes(searchTerm.toLowerCase())
-            ).map((emp) => (
+            ) : filteredEmployees.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center py-20 animate-fade-in">
+                <Empty 
+                  image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                  description={
+                    <div className="text-center">
+                      <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">No matching results</p>
+                      <p className="text-[10px] text-slate-300 font-medium">Try searching for a different name or department.</p>
+                    </div>
+                  } 
+                />
+              </div>
+            ) : filteredEmployees.map((emp) => (
               <motion.div 
                 layout
                 key={emp.id} 
@@ -202,83 +200,11 @@ export default function AttendanceManager() {
         </div>
       </div>
 
-      <div className="lg:col-span-1 flex flex-col h-full gap-3 overflow-hidden">
-        <div className="glass-card p-6 flex-1 min-h-0 flex flex-col bg-white overflow-hidden">
-          <h2 className="text-base font-bold flex items-center gap-2 mb-6 text-slate-800 shrink-0 uppercase tracking-tight">
-            <History size={16} className="text-primary-600" />
-            History
-          </h2>
-
-          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            {!selectedEmployee ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                <Search size={32} className="text-slate-200 mb-4" />
-                <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">Select an employee</p>
-              </div>
-            ) : historyLoading ? (
-              <div className="h-full flex items-center justify-center"><Spin /></div>
-            ) : history.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center py-10">
-                <Empty description={<span className="text-slate-400 text-xs">No records found</span>} />
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {history.map((record) => (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    key={record.id} 
-                    className="p-4 bg-slate-50/50 rounded-xl border border-slate-100 hover:border-primary-100 transition-all group"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{dayjs(record.date).format('dddd')}</div>
-                        <div className="text-sm font-bold text-slate-700">{dayjs(record.date).format('MMM DD, YYYY')}</div>
-                      </div>
-                      <span className={`px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider ${
-                        record.status === 'Present' ? 'bg-emerald-100/50 text-emerald-600' : 'bg-rose-100/50 text-rose-600'
-                      }`}>
-                        {record.status}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
-                      <div className="flex items-center gap-1.5">
-                        <Clock size={12} className="text-slate-400" />
-                        <span className="text-[11px] font-medium text-slate-500">{record.check_in_time || (record.status === 'Present' ? '09:00 AM' : '--:--')}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <MapPin size={12} className="text-slate-400" />
-                        <span className="text-[11px] font-medium text-slate-500">{record.status === 'Present' ? 'Office' : 'N/A'}</span>
-                      </div>
-                    </div>
-
-                    {record.remarks && (
-                      <div className="mt-2 text-[10px] italic text-slate-400 flex items-center gap-1">
-                        <Info size={10} /> {record.remarks}
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-primary-600 to-primary-800 px-3 py-2 rounded-2xl text-white shadow-lg shadow-primary-600/20 relative overflow-hidden group shrink-0">
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-3">
-              <Info size={18} />
-              <span className="font-bold uppercase tracking-widest text-[10px] opacity-70">Admin Intelligence</span>
-            </div>
-            <h3 className="text-base font-bold mb-2">Live Insights</h3>
-            <p className="text-primary-100/90 text-xs leading-relaxed font-medium">
-              Load history instantly by clicking any employee card. Keep track of daily performance seamlessly.
-            </p>
-          </div>
-          <CalendarIcon className="absolute -right-8 -bottom-8 text-white opacity-10 group-hover:scale-110 transition-transform duration-500" size={140} />
-        </div>
-      </div>
+      <AttendanceHistoryCard 
+        selectedEmployee={selectedEmployee}
+        history={history}
+        loading={historyLoading}
+      />
     </div>
   )
 }
