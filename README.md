@@ -14,6 +14,19 @@ A premium, production-ready HRMS dashboard built with a focus on **visual excell
 
 ---
 
+## 🌐 Live Deployment
+
+The application is deployed live on cloud platforms:
+
+- **Frontend**: Hosted on **Vercel** for optimal edge performance.
+  - 🔗 **Live URL**: [https://ethara-ai-beta.vercel.app/](https://ethara-ai-beta.vercel.app/)
+
+- **Backend**: Hosted on **Render** (auto-scaling Python instance).
+  - 🔗 **API URL**: [https://ethara-ai-backend-kfjq.onrender.com/](https://ethara-ai-backend-kfjq.onrender.com/)
+  - 📄 **Docs**: [Swagger UI](https://ethara-ai-backend-kfjq.onrender.com/docs)
+
+---
+
 ## 🚀 Features
 
 ### 1. Advanced Dashboard
@@ -93,7 +106,7 @@ A premium, production-ready HRMS dashboard built with a focus on **visual excell
    - By default, it connects to `http://localhost:8000/api`.
    - To connect to a deployed backend, add:
      ```env
-     VITE_API_BASE_URL=https://your-backend-url.onrender.com/api
+     VITE_API_BASE_URL=https://ethara-ai-backend-kfjq.onrender.com/api
      ```
 
 4. Launch:
