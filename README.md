@@ -8,7 +8,7 @@ A premium, production-ready HRMS dashboard built with a focus on **visual excell
 
 - **🎯 Data-Driven Dashboard**: Real-time KPI cards and interactive distribution charts using `Recharts`.
 - **⚡ Live Attendance Control**: High-performance attendance marking with instant counter updates and live status pulses.
-- **☁️ Cloud-Native Backend**: Fully integrated with **NeonDB (PostgreSQL)** for persistent, cloud-based data storage—no local setup required for the database.
+- **☁️ Cloud-Native Backend**: Fully integrated with **NeonDB (PostgreSQL)** for persistent, cloud-based data storage-no local setup required for the database.
 - **🎨 Premium UI/UX**: Crafted with a "Glassmorphism" aesthetic using **Tailwind CSS**, **Ant Design**, and **Framer Motion** for smooth micro-interactions.
 - **📱 Responsive & Polished**: normalized typography, sticky headers, and a compact, professional data layout.
 
