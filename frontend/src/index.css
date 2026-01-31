@@ -112,3 +112,35 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.custom-segmented.ant-segmented {
+  @apply bg-slate-50 border border-slate-100 p-1 !rounded-xl !important;
+}
+
+.custom-segmented .ant-segmented-group {
+  @apply gap-1 !important;
+}
+
+.custom-segmented .ant-segmented-item {
+  @apply transition-all duration-200 !rounded-lg !important;
+}
+
+.custom-segmented .ant-segmented-item:hover {
+  @apply bg-slate-100 !important;
+}
+
+.custom-segmented .ant-segmented-item-selected {
+  @apply bg-white shadow-sm !rounded-lg !important;
+}
+
+.custom-segmented .ant-segmented-item-label {
+  @apply text-[10px] font-bold text-slate-500 uppercase tracking-widest px-4 py-1.5 transition-colors !important;
+}
+
+.custom-segmented .ant-segmented-item-selected .ant-segmented-item-label {
+  @apply text-primary-600 !important;
+}
+
+.custom-segmented .ant-segmented-thumb {
+  @apply !rounded-lg !important;
+}
