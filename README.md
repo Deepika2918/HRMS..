@@ -85,8 +85,18 @@ A premium, production-ready HRMS dashboard built with a focus on **visual excell
 2. Install Packages:
    ```bash
    npm install
+   ```bash
+   npm install
    ```
-3. Launch:
+
+3. Configure `.env` (Optional):
+   - By default, it connects to `http://localhost:8000/api`.
+   - To connect to a deployed backend, add:
+     ```env
+     VITE_API_BASE_URL=https://your-backend-url.onrender.com/api
+     ```
+
+4. Launch:
    ```bash
    npm run dev
    ```

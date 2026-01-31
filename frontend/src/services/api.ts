@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -12,7 +12,7 @@ const api = axios.create({
 export const employeeService = {
   getAll: () => api.get('/employees/'),
   getById: (id: number) => api.get(`/employees/${id}`),
-  create: (data: any) => api.get('/employees/').then(() => {}), // Placeholder
+  create: (data: any) => api.get('/employees/').then(() => {}), 
   add: (data: any) => api.post('/employees/', data),
   delete: (id: number) => api.delete(`/employees/${id}`),
   getStats: () => api.get('/employees/dashboard/stats'),
