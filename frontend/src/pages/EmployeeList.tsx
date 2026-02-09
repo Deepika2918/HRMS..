@@ -61,7 +61,9 @@ export default function EmployeeList() {
     });
   }
 
-  const filtered = employees.filter(emp => 
+  const employeeList: Employee[] = Array.isArray(employees) ? employees : []
+
+  const filtered = employeeList.filter(emp => 
     emp.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     emp.employee_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
     emp.department.toLowerCase().includes(searchTerm.toLowerCase())

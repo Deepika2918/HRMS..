@@ -46,7 +46,9 @@ export default function Dashboard() {
     </div>
   )
 
-  const chartData = stats ? Object.entries(stats.department_distribution).map(([name, value]) => ({ name, value })) : []
+  const chartData = stats && stats.department_distribution
+    ? Object.entries(stats.department_distribution).map(([name, value]) => ({ name, value }))
+    : []
 
   return (
     <div className="space-y-5 animate-fade-in pb-4">

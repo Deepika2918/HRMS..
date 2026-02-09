@@ -97,7 +97,9 @@ export default function AttendanceManager() {
     fetchHistory(emp.id)
   }
 
-  const filteredEmployees = employees.filter(e => 
+  const employeeList: Employee[] = Array.isArray(employees) ? employees : []
+
+  const filteredEmployees = employeeList.filter(e => 
     e.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     e.department.toLowerCase().includes(searchTerm.toLowerCase())
   )
